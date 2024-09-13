@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "bun run index.ts",
-    "build": "bun build index.ts --outfile commitgenie",
+    "build": "bun build ./index.ts --outdir ./out --splitting --target node",
     "review": "bun run index.ts review"
   },
   "devDependencies": {
@@ -12,16 +12,15 @@
     "@types/node": "^20.0.0"
   },
   "dependencies": {
-    "commander": "^11.0.0",
-    "simple-git": "^3.19.0",
-    "chalk": "^5.3.0",
-    "inquirer": "^9.2.10",
-    "ora": "^7.0.1",
-    "openai": "^4.0.0",
-    "conventional-changelog-cli": "^3.0.0",
-    "langchain": "^0.1.0",
     "@langchain/openai": "^0.0.14",
-    "dotenv": "^16.3.1"
+    "chalk": "^5.3.0",
+    "commander": "^11.0.0",
+    "conventional-changelog-cli": "^3.0.0",
+    "dotenv": "^16.3.1",
+    "inquirer": "^9.2.10",
+    "langchain": "^0.2.19",
+    "ora": "^7.0.1",
+    "simple-git": "^3.19.0"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

@@ -1,15 +1,15 @@
-# commitgenie
+# CommitGenie
 
-To install dependencies:
+CommitGenie is a powerful CLI tool that leverages AI technology to assist in the software development process. It currently offers automated code review functionality, with plans to add automatic generation of git commit messages and changelogs in the future.
 
-```bash
-bun install
-```
+## Features
 
-To run:
+- **AI-Powered Code Review**: Utilizes OpenAI's GPT-4 model to perform intelligent analysis and commentary on git diffs.
 
-```bash
-bun run index.ts
-```
+## Prerequisites
 
-This project was created using `bun init` in bun v1.0.3. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+- [Bun](https://bun.sh/) runtime
+
+## Installation
+
+Clone the repository and install dependencies:

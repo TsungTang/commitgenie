@@ -6,12 +6,8 @@ import fs from "fs";
 import path from "path";
 import { createReviewCommand } from "./command/review/review";
 import "simple-git";
-import "chalk";
-import "inquirer";
-import "ora";
-import "@langchain/openai";
 
-dotenv.config({ path: ".env.local" });
+dotenv.config({ path: path.join(__dirname, "..", ".env.local") });
 
 const openaiApiKey = process.env.OPENAI_API_KEY;
 
@@ -40,6 +36,6 @@ program
     checkGitEnvironment();
   });
 
-program.addCommand(createReviewCommand());
+createReviewCommand(program);
 
-program.parse();
+program.parse(process.argv);

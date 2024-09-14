@@ -1,18 +1,25 @@
 {
   "name": "commitgenie",
-  "module": "index.ts",
-  "type": "module",
   "scripts": {
-    "start": "bun run index.ts",
-    "build": "bun build ./index.ts --outdir ./out --splitting --target node",
-    "review": "bun run index.ts review"
+    "start": "bun run ./src/index.ts",
+    "postbuild": "npx rexreplace '^(#!.+\\n)?' '$1import { createRequire as createImportMetaRequire } from \"module\"; import.meta.require ||= (id) => createImportMetaRequire(import.meta.url)(id);\\n' -GM ./bin/index.js",
+    "build": "bun build --target node ./src/index.ts --outdir ./bin --splitting",
+    "review": "bun run ./src/index.ts review"
   },
+  "bin": {
+    "commitgenie": "./bin/index.js"
+  },
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "bin"
+  ],
   "devDependencies": {
     "bun-types": "latest",
     "@types/node": "^20.0.0"
   },
   "dependencies": {
-    "@langchain/openai": "^0.0.14",
+    "@langchain/core": "^0.3.0",
     "chalk": "^5.3.0",
     "commander": "^11.0.0",
     "conventional-changelog-cli": "^3.0.0",

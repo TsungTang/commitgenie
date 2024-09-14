@@ -13,6 +13,7 @@ export const createMessageCommand = (program: Command) => {
       "Generate diffs with <n> lines of context",
       "3"
     )
+    .option("-k, --api-key <key>", "OpenAI API key")
     .action(messageAction)
     .addHelpText(
       "after",

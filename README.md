@@ -1,6 +1,6 @@
 # CommitGenie
 
-CommitGenie is a powerful CLI tool that leverages AI technology to assist in the software development process. It currently offers automated code review functionality, with plans to add automatic generation of git commit messages and changelogs in the future.
+CommitGenie is a CLI tool that leverages LLM technology to assist in the software development process. It currently offers automated code review functionality, with plans to add automatic generation of git commit messages and changelogs in the future.
 
 ## Features
 

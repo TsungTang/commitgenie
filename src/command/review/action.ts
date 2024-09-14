@@ -1,11 +1,10 @@
 import chalk from "chalk";
-import simpleGit from "simple-git";
+import simpleGit, { TaskOptions } from "simple-git";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { ChatOpenAI } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { RunnableSequence } from "@langchain/core/runnables";
-
+import { getOpenAIConfig } from "../../config/openaiConfig"; 
 const git = simpleGit();
 
 type ReviewOptions = {
@@ -15,6 +14,19 @@ type ReviewOptions = {
 
 export async function reviewAction(options: ReviewOptions) {
   console.log(chalk.blue("Starting code review..."));
+
+  const { apiKey, model } = getOpenAIConfig(); // Get API key and model
+
+  // Check if API key is set
+  if (!apiKey) {
+    console.error(
+      chalk.red(
+        "Error: OpenAI API key is not set. Please configure it using the 'config' command."
+      )
+    );
+    process.exit(1);
+  }
+
   try {
     const contextLines = parseInt(options.unified);
     const args: string[] =
@@ -34,10 +46,11 @@ export async function reviewAction(options: ReviewOptions) {
     console.log(chalk.green("Changes detected. Starting AI review..."));
 
     const llm = new ChatOpenAI({
-      modelName: "gpt-4o-mini-2024-07-18",
+      modelName: model,
       temperature: 0.7,
       maxTokens: 4000,
       streaming: true,
+      apiKey
     });
 
     const textSplitter = new RecursiveCharacterTextSplitter({
@@ -124,10 +137,12 @@ export async function reviewAction(options: ReviewOptions) {
 }
 
 async function analyzeUserIntent(gitDiffCommand: string): Promise<string> {
+  const { model, apiKey } = getOpenAIConfig();
   const llm = new ChatOpenAI({
-    modelName: "gpt-4o-mini-2024-07-18",
+    modelName: model,
     temperature: 0.3,
     maxTokens: 100,
+    apiKey,
   });
 
   const template = `

@@ -7,6 +7,7 @@ import path from "path";
 import "simple-git";
 import { createMessageCommand } from "./command/message/message";
 import { createReviewCommand } from "./command/review/review";
+import { createConfigCommand } from "./command/config/config";
 
 dotenv.config({ path: path.join(__dirname, "..", ".env.local") });
 
@@ -39,4 +40,5 @@ program
 
 createReviewCommand(program);
 createMessageCommand(program);
+createConfigCommand(program);
 program.parse(process.argv);

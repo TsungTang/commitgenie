@@ -4,6 +4,7 @@ import { PromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { ChatOpenAI } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { getOpenAIConfig } from "../../config/openaiConfig";
 
 const git = simpleGit();
 
@@ -17,6 +18,18 @@ type MessageOptions = {
 export async function messageAction(options: MessageOptions) {
   console.log(chalk.blue("Generating commit message..."));
 
+  const { apiKey, model } = getOpenAIConfig(); // Get API key and model
+
+  // Check if API key is set
+  if (!apiKey) {
+    console.error(
+      chalk.red(
+        "Error: OpenAI API key is not set. Please configure it using the 'config' command."
+      )
+    );
+    process.exit(1);
+  }
+
   try {
     let diff = "";
     const contextLines = parseInt(options.unified);
@@ -29,7 +42,6 @@ export async function messageAction(options: MessageOptions) {
     } else if (options.staged) {
       args.push("--staged", `-U${contextLines}`);
     } else {
-      // Default to staged changes if no specific option is provided
       args.push("--staged", `-U${contextLines}`);
     }
 
@@ -45,10 +57,11 @@ export async function messageAction(options: MessageOptions) {
     console.log(chalk.green("Changes detected. Generating..."));
 
     const llm = new ChatOpenAI({
-      modelName: "gpt-4-1106-preview",
+      modelName: model,
       temperature: 0.7,
       maxTokens: 500,
       streaming: false,
+      openAIApiKey: apiKey, // Use the loaded API key
     });
 
     // Optional: Use text splitter if diff is too large, but aim to generate one commit message

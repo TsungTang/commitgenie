@@ -3,8 +3,7 @@
   "scripts": {
     "start": "bun run ./src/index.ts",
     "postbuild": "npx rexreplace '^(#!.+\\n)?' '$1import { createRequire as createImportMetaRequire } from \"module\"; import.meta.require ||= (id) => createImportMetaRequire(import.meta.url)(id);\\n' -GM ./bin/index.js",
-    "build": "bun build --target node ./src/index.ts --outdir ./bin --splitting",
-    "review": "bun run ./src/index.ts review"
+    "build": "bun build --target node ./src/index.ts --outdir ./bin --splitting"
   },
   "bin": {
     "commitgenie": "./bin/index.js"

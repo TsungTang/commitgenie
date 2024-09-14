@@ -8,7 +8,7 @@ export const createReviewCommand = (program: Command) => {
     .option(
       "-U, --unified <n>",
       "Generate diffs with <n> lines of context",
-      "3"
+      "10"
     )
     .allowUnknownOption(true)
     .action((args, options) => reviewAction({ ...options, args }))

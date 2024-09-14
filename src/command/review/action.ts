@@ -4,6 +4,7 @@ import { PromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { ChatOpenAI } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { RunnableSequence } from "@langchain/core/runnables";
 
 const git = simpleGit();
 
@@ -94,9 +95,13 @@ export async function reviewAction(options: ReviewOptions) {
     }
 
     const summaryTemplate = `
-    Based on the reviews of all diff chunks, provide a brief summary of the overall changes and main points of feedback. Focus on the most important issues.
+    Based on the reviews of all diff chunks, provide a concise summary in Traditional Chinese (繁體中文) that includes:
+    1. An overview of the overall changes in this review
+    2. A list of the main files that were modified
+    3. The most important feedback points
+    4. Brief overall recommendations for the user to improve code quality
 
-    Please provide your summary in Traditional Chinese (繁體中文).
+    Keep the summary concise and clear.
     `;
 
     const summaryPrompt = new PromptTemplate({

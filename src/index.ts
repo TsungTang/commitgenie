@@ -4,8 +4,9 @@ import dotenv from "dotenv";
 import { Command } from "commander";
 import fs from "fs";
 import path from "path";
-import { createReviewCommand } from "./command/review/review";
 import "simple-git";
+import { createMessageCommand } from "./command/message/message";
+import { createReviewCommand } from "./command/review/review";
 
 dotenv.config({ path: path.join(__dirname, "..", ".env.local") });
 
@@ -37,5 +38,5 @@ program
   });
 
 createReviewCommand(program);
-
+createMessageCommand(program);
 program.parse(process.argv);

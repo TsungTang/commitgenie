@@ -1,9 +1,10 @@
 {
   "name": "@tsungtanglee/commitgenie",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "scripts": {
     "start": "bun run ./src/index.ts",
-    "build": "bun build --target node ./src/index.ts --outdir ./bin --splitting --minify"
+    "build": "bun build --target node ./src/index.ts --outdir ./bin --splitting --minify",
+    "publish": "npm publish"
   },
   "type": "module",
   "bin": {

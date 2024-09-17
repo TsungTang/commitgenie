@@ -1,19 +1,15 @@
-import { Command } from "commander";
-import { reviewAction } from "./action";
+import { Command } from 'commander';
+import { reviewAction } from './action';
 
 export const createReviewCommand = (program: Command) => {
   program
-    .command("review [args...]")
-    .description("Perform AI-assisted code review based on git diff")
-    .option(
-      "-U, --unified <n>",
-      "Generate diffs with <n> lines of context",
-      "10"
-    )
+    .command('review [args...]')
+    .description('Perform AI-assisted code review based on git diff')
+    .option('-U, --unified <n>', 'Generate diffs with <n> lines of context', '10')
     .allowUnknownOption(true)
     .action((args, options) => reviewAction({ ...options, args }))
     .addHelpText(
-      "after",
+      'after',
       `
 Description:
   This command performs an AI-assisted code review based on the output of git diff.

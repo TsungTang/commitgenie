@@ -1,22 +1,18 @@
-import { Command } from "commander";
-import { messageAction } from "./action";
+import { Command } from 'commander';
+import { messageAction } from './action';
 
 export const createMessageCommand = (program: Command) => {
   program
-    .command("message")
-    .description("Generate AI-assisted commit message")
-    .option("-c, --commit <hash>", "Generate message for a specific commit")
-    .option("-f, --files <files...>", "Generate message for specific files")
-    .option("-s, --staged", "Generate message for staged changes")
-    .option(
-      "-U, --unified <n>",
-      "Generate diffs with <n> lines of context",
-      "3"
-    )
-    .option("-k, --api-key <key>", "OpenAI API key")
+    .command('message')
+    .description('Generate AI-assisted commit message')
+    .option('-c, --commit <hash>', 'Generate message for a specific commit')
+    .option('-f, --files <files...>', 'Generate message for specific files')
+    .option('-s, --staged', 'Generate message for staged changes')
+    .option('-U, --unified <n>', 'Generate diffs with <n> lines of context', '3')
+    .option('-k, --api-key <key>', 'OpenAI API key')
     .action(messageAction)
     .addHelpText(
-      "after",
+      'after',
       `
 Description:
   This command generates an AI-assisted commit message based on the changes in a commit, specific files, or staged changes.

@@ -9,7 +9,6 @@
     "commitgenie": "./bin/index.js"
   },
   "license": "MIT",
-  "type": "module",
   "files": [
     "bin"
   ],
@@ -26,6 +25,7 @@
     "inquirer": "^9.2.10",
     "langchain": "^0.2.19",
     "ora": "^7.0.1",
+    "prettier": "^3.3.3",
     "simple-git": "^3.19.0"
   },
   "peerDependencies": {

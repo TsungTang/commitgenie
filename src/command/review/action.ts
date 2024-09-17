@@ -1,10 +1,10 @@
-import chalk from "chalk";
-import simpleGit, { TaskOptions } from "simple-git";
-import { PromptTemplate } from "@langchain/core/prompts";
-import { StringOutputParser } from "@langchain/core/output_parsers";
-import { ChatOpenAI } from "@langchain/openai";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { getOpenAIConfig } from "../../config/openaiConfig"; 
+import chalk from 'chalk';
+import simpleGit, { TaskOptions } from 'simple-git';
+import { PromptTemplate } from '@langchain/core/prompts';
+import { StringOutputParser } from '@langchain/core/output_parsers';
+import { ChatOpenAI } from '@langchain/openai';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { getOpenAIConfig } from '../../config/openaiConfig';
 const git = simpleGit();
 
 type ReviewOptions = {
@@ -13,37 +13,34 @@ type ReviewOptions = {
 };
 
 export async function reviewAction(options: ReviewOptions) {
-  console.log(chalk.blue("Starting code review..."));
+  console.log(chalk.blue('Starting code review...'));
 
   const { apiKey, model } = getOpenAIConfig(); // Get API key and model
 
   // Check if API key is set
   if (!apiKey) {
     console.error(
-      chalk.red(
-        "Error: OpenAI API key is not set. Please configure it using the 'config' command."
-      )
+      chalk.red("Error: OpenAI API key is not set. Please configure it using the 'config' command.")
     );
     process.exit(1);
   }
 
   try {
     const contextLines = parseInt(options.unified);
-    const args: string[] =
-      options.args && options.args.length > 0 ? options.args : ["HEAD"];
+    const args: string[] = options.args && options.args.length > 0 ? options.args : ['HEAD'];
 
-    const gitDiffCommand = `git diff ${args.join(" ")} -U${contextLines}`;
+    const gitDiffCommand = `git diff ${args.join(' ')} -U${contextLines}`;
     const intentAnalysis = await analyzeUserIntent(gitDiffCommand);
     console.log(chalk.yellow(`${gitDiffCommand}: `), intentAnalysis);
 
     const diff = await git.diff([...args, `-U${contextLines}`]);
 
     if (!diff.trim()) {
-      console.log(chalk.yellow("No changes detected. Nothing to review."));
+      console.log(chalk.yellow('No changes detected. Nothing to review.'));
       return;
     }
 
-    console.log(chalk.green("Changes detected. Starting AI review..."));
+    console.log(chalk.green('Changes detected. Starting AI review...'));
 
     const llm = new ChatOpenAI({
       modelName: model,
@@ -55,7 +52,7 @@ export async function reviewAction(options: ReviewOptions) {
 
     const textSplitter = new RecursiveCharacterTextSplitter({
       chunkSize: 4000,
-      chunkOverlap: 500,
+      chunkOverlap: 500
     });
 
     const diffChunks = await textSplitter.splitText(diff);
@@ -92,19 +89,19 @@ export async function reviewAction(options: ReviewOptions) {
 
     const prompt = new PromptTemplate({
       template,
-      inputVariables: ["diffChunk"],
+      inputVariables: ['diffChunk']
     });
 
     const chain = prompt.pipe(llm as any).pipe(new StringOutputParser());
 
-    console.log(chalk.green("AI Review:"));
+    console.log(chalk.green('AI Review:'));
 
     for (const chunk of diffChunks) {
       const stream = await chain.stream({ diffChunk: chunk });
       for await (const response of stream) {
         process.stdout.write(response);
       }
-      console.log("\n---\n");
+      console.log('\n---\n');
     }
 
     const summaryTemplate = `
@@ -119,20 +116,18 @@ export async function reviewAction(options: ReviewOptions) {
 
     const summaryPrompt = new PromptTemplate({
       template: summaryTemplate,
-      inputVariables: [],
+      inputVariables: []
     });
 
-    const summaryChain = summaryPrompt
-      .pipe(llm as any)
-      .pipe(new StringOutputParser());
+    const summaryChain = summaryPrompt.pipe(llm as any).pipe(new StringOutputParser());
 
-    console.log(chalk.green("Overall Summary:"));
+    console.log(chalk.green('Overall Summary:'));
     const summaryStream = await summaryChain.stream({});
     for await (const chunk of summaryStream) {
       process.stdout.write(chunk);
     }
   } catch (error) {
-    console.error(chalk.red("Error during review:"), error);
+    console.error(chalk.red('Error during review:'), error);
   }
 }
 
@@ -142,7 +137,7 @@ async function analyzeUserIntent(gitDiffCommand: string): Promise<string> {
     modelName: model,
     temperature: 0.3,
     maxTokens: 100,
-    apiKey,
+    apiKey
   });
 
   const template = `
@@ -153,7 +148,7 @@ async function analyzeUserIntent(gitDiffCommand: string): Promise<string> {
 
   const prompt = new PromptTemplate({
     template,
-    inputVariables: ["gitDiffCommand"],
+    inputVariables: ['gitDiffCommand']
   });
 
   const chain = prompt.pipe(llm as any).pipe(new StringOutputParser());

@@ -1,10 +1,10 @@
-import chalk from "chalk";
-import simpleGit from "simple-git";
-import { PromptTemplate } from "@langchain/core/prompts";
-import { StringOutputParser } from "@langchain/core/output_parsers";
-import { ChatOpenAI } from "@langchain/openai";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { getOpenAIConfig } from "../../config/openaiConfig";
+import chalk from 'chalk';
+import simpleGit from 'simple-git';
+import { PromptTemplate } from '@langchain/core/prompts';
+import { StringOutputParser } from '@langchain/core/output_parsers';
+import { ChatOpenAI } from '@langchain/openai';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { getOpenAIConfig } from '../../config/openaiConfig';
 
 const git = simpleGit();
 
@@ -16,64 +16,59 @@ type MessageOptions = {
 };
 
 export async function messageAction(options: MessageOptions) {
-  console.log(chalk.blue("Generating commit message..."));
+  console.log(chalk.blue('Generating commit message...'));
 
-  const { apiKey, model } = getOpenAIConfig(); // Get API key and model
+  const { apiKey, model } = getOpenAIConfig();
 
-  // Check if API key is set
   if (!apiKey) {
     console.error(
-      chalk.red(
-        "Error: OpenAI API key is not set. Please configure it using the 'config' command."
-      )
+      chalk.red("Error: OpenAI API key is not set. Please configure it using the 'config' command.")
     );
     process.exit(1);
   }
 
   try {
-    let diff = "";
+    let diff = '';
     const contextLines = parseInt(options.unified);
     const args: string[] = [];
 
     if (options.commit) {
       args.push(`${options.commit}^..${options.commit}`, `-U${contextLines}`);
     } else if (options.files && options.files.length > 0) {
-      args.push("HEAD", "--", ...options.files, `-U${contextLines}`);
+      args.push('HEAD', '--', ...options.files, `-U${contextLines}`);
     } else if (options.staged) {
-      args.push("--staged", `-U${contextLines}`);
+      args.push('--staged', `-U${contextLines}`);
     } else {
-      args.push("--staged", `-U${contextLines}`);
+      args.push('--staged', `-U${contextLines}`);
     }
 
     diff = await git.diff(args);
 
     if (!diff.trim()) {
-      console.log(
-        chalk.yellow("No changes detected. Cannot generate commit message.")
-      );
+      console.log(chalk.yellow('No changes detected. Cannot generate commit message.'));
       return;
     }
 
-    console.log(chalk.green("Changes detected. Generating..."));
+    console.log(chalk.green('Changes detected. Generating...'));
 
     const llm = new ChatOpenAI({
       modelName: model,
       temperature: 0.7,
       maxTokens: 500,
       streaming: false,
-      openAIApiKey: apiKey, // Use the loaded API key
+      apiKey
     });
 
     // Optional: Use text splitter if diff is too large, but aim to generate one commit message
     const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 3000, // Adjust chunk size to ensure it fits within token limits
-      chunkOverlap: 400,
+      chunkSize: 3000,
+      chunkOverlap: 400
     });
 
     const diffChunks = await textSplitter.splitText(diff);
 
     // Combine chunks into one prompt if possible
-    const combinedDiff = diffChunks.join("\n");
+    const combinedDiff = diffChunks.join('\n');
 
     const template = `
 You are an experienced developer tasked with writing a concise and clear commit message based on the following Git diff content, adhering to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary) specification.
@@ -110,16 +105,16 @@ Please generate a single, well-structured commit message that summarizes the cha
 
     const prompt = new PromptTemplate({
       template,
-      inputVariables: ["diffChunk"],
+      inputVariables: ['diffChunk']
     });
 
     const chain = prompt.pipe(llm as any).pipe(new StringOutputParser());
 
     const commitMessage = await chain.invoke({ diffChunk: combinedDiff });
 
-    console.log(chalk.green("AI-generated commit message:"));
+    console.log(chalk.green('AI-generated commit message:'));
     console.log(`\n${commitMessage.trim()}\n`);
   } catch (error) {
-    console.error(chalk.red("Error generating commit message:"), error);
+    console.error(chalk.red('Error generating commit message:'), error);
   }
 }

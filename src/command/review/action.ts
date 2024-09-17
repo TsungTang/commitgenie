@@ -7,7 +7,7 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { getOpenAIConfig } from '../../config/openaiConfig';
 import fs from 'fs/promises';
 import { isGitRepository } from '../../utils';
-import { commonIgnoreFiles } from '../../config';
+import { COMMON_IGNORE_FILES } from '../../config';
 
 const git = simpleGit();
 
@@ -50,7 +50,7 @@ export async function reviewAction(options: ReviewOptions) {
 
       const contextLines = parseInt(options.unified);
       const baseArgs: string[] = options.args && options.args.length > 0 ? options.args : ['HEAD'];
-      const ignoreArgs = commonIgnoreFiles.map(file => `:!${file}`);
+      const ignoreArgs = COMMON_IGNORE_FILES.map(file => `:!${file}`);
 
       // Construct git diff command string for intent analysis
       const gitDiffCommand = `git diff ${baseArgs.join(' ')} -U${contextLines}`;

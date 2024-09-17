@@ -1,4 +1,4 @@
-export const commonIgnoreFiles = [
+export const COMMON_IGNORE_FILES = [
   // JavaScript / Node.js
   'package-lock.json',
   'yarn.lock',

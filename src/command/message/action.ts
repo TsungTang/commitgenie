@@ -5,7 +5,7 @@ import { StringOutputParser } from '@langchain/core/output_parsers';
 import { ChatOpenAI } from '@langchain/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { isGitRepository } from '../../utils';
-import { commonIgnoreFiles, getOpenAIConfig } from '../../config';
+import { COMMON_IGNORE_FILES, getOpenAIConfig } from '../../config';
 const git = simpleGit();
 
 type MessageOptions = {
@@ -33,7 +33,7 @@ export async function messageAction(options: MessageOptions) {
     let diff = '';
     const contextLines = parseInt(options.unified);
     const baseArgs: string[] = [];
-    const ignoreArgs = commonIgnoreFiles.map(file => `:!${file}`);
+    const ignoreArgs = COMMON_IGNORE_FILES.map(file => `:!${file}`);
 
     if (options.commit) {
       baseArgs.push(`${options.commit}^..${options.commit}`);

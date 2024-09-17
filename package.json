@@ -4,7 +4,9 @@
   "scripts": {
     "start": "bun run ./src/index.ts",
     "build": "bun build --target node ./src/index.ts --outdir ./bin --splitting --minify",
-    "release": "npm run build && npm version patch && npm publish && git push --follow-tags"
+    "release:patch": "npm run build && npm version patch && npm publish && git push --follow-tags",
+    "release:minor": "npm run build && npm version minor && npm publish && git push --follow-tags",
+    "release:major": "npm run build && npm version major && npm publish && git push --follow-tags"
   },
   "type": "module",
   "bin": {

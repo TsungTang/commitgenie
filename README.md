@@ -6,13 +6,29 @@ CommitGenie is a CLI tool that leverages LLM technology to assist in the softwar
 
 - **AI-Powered Code Review**: Utilizes OpenAI's GPT-4 model to perform intelligent analysis and commentary on git diffs.
 
+  - Review staged changes, working directory changes, specific commits, or differences between branches.
+  - Customize the number of context lines for better understanding of changes.
+  - Review specific files or entire repositories.
+  - Supports reviewing pure text content or content from a file.
+
+- **AI-Assisted Commit Message Generation**: Automatically generates meaningful commit messages based on code changes.
+
+  - Generate messages for staged changes, specific commits, or selected files.
+  - Customizable context lines for more accurate message generation.
+
+- **Flexible Configuration**: Easy setup and management of OpenAI API key for seamless integration.
+
+- **Developer-Friendly CLI**: Intuitive command-line interface with comprehensive help text and examples for each command.
+
+- **Git Integration**: Seamlessly works with your existing Git workflow, supporting various Git diff options and arguments.
+
 ## Prerequisites
 
-- [Bun](https://bun.sh/) runtime
+- # Node.js (version 18 or higher)
 
 ## Installation
 
-To install CommitGenie globally, run:
+To install CommitGenie globally, run: `npm install -g @tsungtanglee/commitgenie`
 
 ## Local Development and Testing
 

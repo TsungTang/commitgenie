@@ -1,6 +1,6 @@
 {
   "name": "@tsungtanglee/commitgenie",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "scripts": {
     "start": "bun run ./src/index.ts",
     "build": "bun build --target node ./src/index.ts --outdir ./bin --splitting --minify",

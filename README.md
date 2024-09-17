@@ -12,7 +12,7 @@ CommitGenie is a CLI tool that leverages LLM technology to assist in the softwar
 
 ## Installation
 
-Clone the repository and install dependencies:
+To install CommitGenie globally, run:
 
 ## Local Development and Testing
 

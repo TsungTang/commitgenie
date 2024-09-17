@@ -5,7 +5,7 @@ import { StringOutputParser } from '@langchain/core/output_parsers';
 import { ChatOpenAI } from '@langchain/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { getOpenAIConfig } from '../../config/openaiConfig';
-
+import { isGitRepository } from '../../utils';
 const git = simpleGit();
 
 type MessageOptions = {
@@ -26,6 +26,8 @@ export async function messageAction(options: MessageOptions) {
     );
     process.exit(1);
   }
+
+  isGitRepository();
 
   try {
     let diff = '';

@@ -1,15 +1,20 @@
 import chalk from 'chalk';
-import simpleGit, { TaskOptions } from 'simple-git';
+import simpleGit from 'simple-git';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { ChatOpenAI } from '@langchain/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { getOpenAIConfig } from '../../config/openaiConfig';
+import fs from 'fs/promises';
+import { isGitRepository } from '../../utils';
+
 const git = simpleGit();
 
 type ReviewOptions = {
   args: string[];
   unified: string;
+  text?: string;
+  file?: string;
 };
 
 export async function reviewAction(options: ReviewOptions) {
@@ -24,23 +29,40 @@ export async function reviewAction(options: ReviewOptions) {
     );
     process.exit(1);
   }
+  console.log(chalk.yellow('Reviewing provided text content...'));
 
   try {
-    const contextLines = parseInt(options.unified);
-    const args: string[] = options.args && options.args.length > 0 ? options.args : ['HEAD'];
+    let diff: string;
 
-    const gitDiffCommand = `git diff ${args.join(' ')} -U${contextLines}`;
-    const intentAnalysis = await analyzeUserIntent(gitDiffCommand);
-    console.log(chalk.yellow(`${gitDiffCommand}: `), intentAnalysis);
+    if (options.text) {
+      diff = options.text;
+    } else if (options.file) {
+      try {
+        diff = await fs.readFile(options.file, 'utf-8');
+        console.log(chalk.yellow(`Reviewing content from file: ${options.file}`));
+      } catch (error) {
+        console.error(chalk.red(`Error reading file: ${options.file}`), error);
+        process.exit(1);
+      }
+    } else {
+      isGitRepository();
 
-    const diff = await git.diff([...args, `-U${contextLines}`]);
+      const contextLines = parseInt(options.unified);
+      const args: string[] = options.args && options.args.length > 0 ? options.args : ['HEAD'];
+
+      const gitDiffCommand = `git diff ${args.join(' ')} -U${contextLines}`;
+      const intentAnalysis = await analyzeUserIntent(gitDiffCommand);
+      console.log(chalk.yellow(`${gitDiffCommand}: `), intentAnalysis);
+
+      diff = await git.diff([...args, `-U${contextLines}`]);
+    }
 
     if (!diff.trim()) {
-      console.log(chalk.yellow('No changes detected. Nothing to review.'));
+      console.log(chalk.yellow('No content detected. Nothing to review.'));
       return;
     }
 
-    console.log(chalk.green('Changes detected. Starting AI review...'));
+    console.log(chalk.green('Content detected. Starting AI review...'));
 
     const llm = new ChatOpenAI({
       modelName: model,

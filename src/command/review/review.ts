@@ -4,8 +4,10 @@ import { reviewAction } from './action';
 export const createReviewCommand = (program: Command) => {
   program
     .command('review [args...]')
-    .description('Perform AI-assisted code review based on git diff')
+    .description('Perform AI-assisted code review based on git diff or pure text')
     .option('-U, --unified <n>', 'Generate diffs with <n> lines of context', '10')
+    .option('-t, --text <text>', 'Provide pure text content for review')
+    .option('-f, --file <path>', 'Provide a file path containing the content for review')
     .allowUnknownOption(true)
     .action((args, options) => reviewAction({ ...options, args }))
     .addHelpText(
@@ -40,10 +42,18 @@ Examples:
   8. Combine multiple options:
      $ commitgenie review --staged -U5 -- src/
 
+  9. Review pure text content:
+     $ commitgenie review -t "Your code content here"
+
+  10. Review content from a file:
+     $ commitgenie review -f path/to/your/file.txt
+
 Notes:
   - This command mimics git diff syntax. Any arguments valid for git diff can be used.
   - The -U or --unified option sets the number of context lines for the diff.
   - Use -- to separate paths from other options, especially when reviewing specific files.
+  - Use -t or --text to provide pure text content for review.
+  - Use -f or --file to provide a file path containing the content for review.
     `
     );
 };

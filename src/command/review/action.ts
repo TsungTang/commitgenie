@@ -49,15 +49,18 @@ export async function reviewAction(options: ReviewOptions) {
       isGitRepository();
 
       const contextLines = parseInt(options.unified);
-      const args: string[] = options.args && options.args.length > 0 ? options.args : ['HEAD'];
-
-      const gitDiffCommand = `git diff ${args.join(' ')} -U${contextLines}`;
-      const intentAnalysis = await analyzeUserIntent(gitDiffCommand);
-
+      const baseArgs: string[] = options.args && options.args.length > 0 ? options.args : ['HEAD'];
       const ignoreArgs = commonIgnoreFiles.map(file => `:!${file}`);
 
+      // Construct git diff command string for intent analysis
+      const gitDiffCommand = `git diff ${baseArgs.join(' ')} -U${contextLines}`;
+      const intentAnalysis = await analyzeUserIntent(gitDiffCommand);
       console.log(chalk.yellow(`${gitDiffCommand}: `), intentAnalysis);
-      diff = await git.diff([...args, `-U${contextLines}`, '--', '.', ...ignoreArgs]);
+
+      // Construct final arguments array
+      const finalArgs = [...baseArgs, `-U${contextLines}`, '--', '.', ...ignoreArgs];
+
+      diff = await git.diff(finalArgs);
     }
 
     if (!diff.trim()) {

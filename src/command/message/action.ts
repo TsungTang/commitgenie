@@ -32,22 +32,22 @@ export async function messageAction(options: MessageOptions) {
   try {
     let diff = '';
     const contextLines = parseInt(options.unified);
-    const args: string[] = [];
-
+    const baseArgs: string[] = [];
     const ignoreArgs = commonIgnoreFiles.map(file => `:!${file}`);
-    args.push('--', '.', ...ignoreArgs);
 
     if (options.commit) {
-      args.push(`${options.commit}^..${options.commit}`, `-U${contextLines}`);
+      baseArgs.push(`${options.commit}^..${options.commit}`);
     } else if (options.files && options.files.length > 0) {
-      args.push('HEAD', '--', ...options.files, `-U${contextLines}`);
+      baseArgs.push('HEAD', '--', ...options.files);
     } else if (options.staged) {
-      args.push('--staged', `-U${contextLines}`);
+      baseArgs.push('--staged');
     } else {
-      args.push('--staged', `-U${contextLines}`);
+      baseArgs.push('--staged');
     }
 
-    diff = await git.diff(args);
+    const finalArgs = [...baseArgs, `-U${contextLines}`, '--', '.', ...ignoreArgs];
+
+    diff = await git.diff(finalArgs);
 
     if (!diff.trim()) {
       console.log(chalk.yellow('No changes detected. Cannot generate commit message.'));

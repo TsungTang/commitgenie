@@ -7,6 +7,7 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { getOpenAIConfig } from '../../config/openaiConfig';
 import fs from 'fs/promises';
 import { isGitRepository } from '../../utils';
+import { commonIgnoreFiles } from '../../config';
 
 const git = simpleGit();
 
@@ -52,9 +53,11 @@ export async function reviewAction(options: ReviewOptions) {
 
       const gitDiffCommand = `git diff ${args.join(' ')} -U${contextLines}`;
       const intentAnalysis = await analyzeUserIntent(gitDiffCommand);
-      console.log(chalk.yellow(`${gitDiffCommand}: `), intentAnalysis);
 
-      diff = await git.diff([...args, `-U${contextLines}`]);
+      const ignoreArgs = commonIgnoreFiles.map(file => `:!${file}`);
+
+      console.log(chalk.yellow(`${gitDiffCommand}: `), intentAnalysis);
+      diff = await git.diff([...args, `-U${contextLines}`, '--', '.', ...ignoreArgs]);
     }
 
     if (!diff.trim()) {
@@ -67,14 +70,14 @@ export async function reviewAction(options: ReviewOptions) {
     const llm = new ChatOpenAI({
       modelName: model,
       temperature: 0.7,
-      maxTokens: 4000,
+      maxTokens: 10000,
       streaming: true,
       apiKey
     });
 
     const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 4000,
-      chunkOverlap: 500
+      chunkSize: 16000,
+      chunkOverlap: 1000
     });
 
     const diffChunks = await textSplitter.splitText(diff);

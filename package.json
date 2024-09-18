@@ -26,7 +26,7 @@
     "commander": "^11.0.0",
     "conventional-changelog-cli": "^3.0.0",
     "dotenv": "^16.3.1",
-    "inquirer": "^9.2.10",
+    "inquirer": "^11.0.2",
     "langchain": "^0.2.19",
     "ora": "^7.0.1",
     "prettier": "^3.3.3",

@@ -13,8 +13,8 @@ program
   .name('commitgenie')
   .description('AI-powered code review and git utilities')
   .version('0.1.0')
-  .hook('preAction', thisCommand => {
-    if (!COMMANDS_WITHOUT_API_KEY.includes(thisCommand.name() as TCommandWithoutApiKey)) {
+  .hook('preAction', (thisCommand, actionCommand) => {
+    if (!COMMANDS_WITHOUT_API_KEY.includes(actionCommand.name() as TCommandWithoutApiKey)) {
       try {
         const { apiKey } = getOpenAIConfig();
         if (!apiKey) {

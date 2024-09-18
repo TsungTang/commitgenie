@@ -5,7 +5,7 @@ import os from 'os';
 const configFilePath = path.join(os.homedir(), '.commitgenie_config.json');
 
 export const getOpenAIConfig = () => {
-  let apiKey = process.env.OPENAI_API_KEY || '';
+  let apiKey = '';
   let model = 'gpt-4o-mini'; // default model
 
   // if config file exists, read config

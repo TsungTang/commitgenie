@@ -8,6 +8,11 @@ export const createReviewCommand = (program: Command) => {
     .option('-U, --unified <n>', 'Generate diffs with <n> lines of context', '10')
     .option('-t, --text <text>', 'Provide pure text content for review')
     .option('-f, --file <path>', 'Provide a file path containing the content for review')
+    .option(
+      '-c, --chunk-size <n|auto>',
+      'Chunk size for text splitting (use "auto" to estimate based on the model)',
+      '4000'
+    )
     .allowUnknownOption(true)
     .action((args, options) => reviewAction({ ...options, args }))
     .addHelpText(
@@ -54,6 +59,7 @@ Notes:
   - Use -- to separate paths from other options, especially when reviewing specific files.
   - Use -t or --text to provide pure text content for review.
   - Use -f or --file to provide a file path containing the content for review.
+  - Use -c or --chunk-size to control how large each diff chunk is when sent to the AI.
     `
     );
 };

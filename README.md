@@ -10,6 +10,7 @@ CommitGenie is a CLI tool that leverages LLM technology to assist in the softwar
   - Customize the number of context lines for better understanding of changes.
   - Review specific files or entire repositories.
   - Supports reviewing pure text content or content from a file.
+  - Adjustable chunk size for large reviews via the `--chunk-size` option.
 
 - **AI-Assisted Commit Message Generation**: Automatically generates meaningful commit messages based on code changes.
 

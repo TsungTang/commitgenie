@@ -9,16 +9,17 @@ dotenv.config({ path: path.join(process.cwd(), '.env.local'), override: true });
 const configFilePath = path.join(os.homedir(), '.commitgenie_config.json');
 
 export const getOpenAIConfig = () => {
-  // Defaults can come from environment variables
-  let apiKey = process.env.OPENAI_API_KEY || '';
-  let model = process.env.OPENAI_MODEL || 'gpt-4o-mini'; // default model
+  const envApiKey = process.env.OPENAI_API_KEY;
+  const envModel = process.env.OPENAI_MODEL;
 
-  // if config file exists, read config
+  let apiKey = envApiKey || '';
+  let model = envModel || 'gpt-4o-mini'; // default model
+
   if (fs.existsSync(configFilePath)) {
     try {
       const config = JSON.parse(fs.readFileSync(configFilePath, 'utf-8'));
-      apiKey = config.apiKey || apiKey;
-      model = config.model || model;
+      if (!apiKey) apiKey = config.apiKey || '';
+      if (!envModel) model = config.model || model;
     } catch (error) {
       console.error('Error reading config file:', error);
     }
@@ -26,7 +27,7 @@ export const getOpenAIConfig = () => {
 
   if (!apiKey) {
     throw new Error(
-      'OpenAI API key is not set. Please set it in your environment variables or configuration file.'
+      'OpenAI API key is not set. Provide it via the OPENAI_API_KEY environment variable or save it using the config command.'
     );
   }
 

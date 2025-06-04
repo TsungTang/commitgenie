@@ -123,16 +123,23 @@ export async function reviewAction(options: ReviewOptions) {
 
     console.log(chalk.green('AI Review:'));
 
+    let fullReview = '';
+
     for (const chunk of diffChunks) {
       const stream = await chain.stream({ diffChunk: chunk });
+      let chunkReview = '';
       for await (const response of stream) {
         process.stdout.write(response);
+        chunkReview += response;
       }
+      fullReview += chunkReview + '\n---\n';
       console.log('\n---\n');
     }
 
     const summaryTemplate = `
-    Based on the reviews of all diff chunks, provide a concise summary in Traditional Chinese (繁體中文) that includes:
+    Based on the reviews of all diff chunks below:
+    {fullReview}
+    Provide a concise summary in Traditional Chinese (繁體中文) that includes:
     1. An overview of the overall changes in this review
     2. A list of the main files that were modified
     3. The most important feedback points
@@ -143,13 +150,13 @@ export async function reviewAction(options: ReviewOptions) {
 
     const summaryPrompt = new PromptTemplate({
       template: summaryTemplate,
-      inputVariables: []
+      inputVariables: ['fullReview']
     });
 
     const summaryChain = summaryPrompt.pipe(llm as any).pipe(new StringOutputParser());
 
     console.log(chalk.green('Overall Summary:'));
-    const summaryStream = await summaryChain.stream({});
+    const summaryStream = await summaryChain.stream({ fullReview });
     for await (const chunk of summaryStream) {
       process.stdout.write(chunk);
     }

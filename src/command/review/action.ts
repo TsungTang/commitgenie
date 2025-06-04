@@ -11,11 +11,24 @@ import { COMMON_IGNORE_FILES } from '../../config';
 
 const git = simpleGit();
 
+const estimateChunkSize = (model: string) => {
+  const lower = model.toLowerCase();
+  let tokenLimit = 16000;
+  if (lower.includes('3.5')) tokenLimit = 4096;
+  else if (lower.includes('32k')) tokenLimit = 32768;
+  else if (lower.includes('128k') || lower.includes('4o')) tokenLimit = 128000;
+
+  const availableTokens = tokenLimit - 1000; // reserve tokens for instructions
+  const charCount = availableTokens * 4; // rough token to char conversion
+  return Math.min(charCount, 16000); // cap to avoid very large chunks
+};
+
 type ReviewOptions = {
   args: string[];
   unified: string;
   text?: string;
   file?: string;
+  chunkSize: string;
 };
 
 export async function reviewAction(options: ReviewOptions) {
@@ -77,8 +90,13 @@ export async function reviewAction(options: ReviewOptions) {
       apiKey
     });
 
+    const chunkSize =
+      options.chunkSize === 'auto'
+        ? estimateChunkSize(model)
+        : parseInt(options.chunkSize, 10);
+
     const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 16000,
+      chunkSize,
       chunkOverlap: 1000
     });
 

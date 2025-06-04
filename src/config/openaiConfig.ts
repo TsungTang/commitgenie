@@ -1,12 +1,17 @@
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env.local if present
+dotenv.config({ path: path.join(process.cwd(), '.env.local'), override: true });
 
 const configFilePath = path.join(os.homedir(), '.commitgenie_config.json');
 
 export const getOpenAIConfig = () => {
-  let apiKey = '';
-  let model = 'gpt-4o-mini'; // default model
+  // Defaults can come from environment variables
+  let apiKey = process.env.OPENAI_API_KEY || '';
+  let model = process.env.OPENAI_MODEL || 'gpt-4o-mini'; // default model
 
   // if config file exists, read config
   if (fs.existsSync(configFilePath)) {

@@ -27,7 +27,7 @@ export async function messageAction(options: MessageOptions) {
     process.exit(1);
   }
 
-  isGitRepository();
+  await isGitRepository();
 
   try {
     let diff = '';

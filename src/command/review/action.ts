@@ -30,12 +30,11 @@ export async function reviewAction(options: ReviewOptions) {
     );
     process.exit(1);
   }
-  console.log(chalk.yellow('Reviewing provided text content...'));
-
   try {
     let diff: string;
 
     if (options.text) {
+      console.log(chalk.yellow('Reviewing provided text content...'));
       diff = options.text;
     } else if (options.file) {
       try {
@@ -46,7 +45,7 @@ export async function reviewAction(options: ReviewOptions) {
         process.exit(1);
       }
     } else {
-      isGitRepository();
+      await isGitRepository();
 
       const contextLines = parseInt(options.unified);
       const baseArgs: string[] = options.args && options.args.length > 0 ? options.args : ['HEAD'];

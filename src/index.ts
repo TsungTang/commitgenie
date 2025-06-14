@@ -5,7 +5,7 @@ import 'simple-git';
 import { createMessageCommand } from './command/message/message';
 import { createReviewCommand } from './command/review/review';
 import { createConfigCommand } from './command/config/config';
-import { getOpenAIConfig, COMMANDS_WITHOUT_API_KEY, TCommandWithoutApiKey } from './config';
+import { getLLMConfig, COMMANDS_WITHOUT_API_KEY, TCommandWithoutApiKey } from './config';
 
 const program = new Command();
 
@@ -16,10 +16,10 @@ program
   .hook('preAction', (thisCommand, actionCommand) => {
     if (!COMMANDS_WITHOUT_API_KEY.includes(actionCommand.name() as TCommandWithoutApiKey)) {
       try {
-        const { apiKey } = getOpenAIConfig();
+        const { apiKey, provider } = getLLMConfig();
         if (!apiKey) {
           console.error(
-            'Error: OpenAI API key is not set. Please set the OPENAI_API_KEY environment variable or configure it using the config command.'
+            `Error: ${provider} API key is not set. Please configure it using the config command.`
           );
           process.exit(1);
         }

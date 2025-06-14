@@ -4,7 +4,7 @@ import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { ChatOpenAI } from '@langchain/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { getOpenAIConfig } from '../../config/openaiConfig';
+import { getLLMConfig } from '../../config';
 import fs from 'fs/promises';
 import { isGitRepository } from '../../utils';
 import { COMMON_IGNORE_FILES } from '../../config';
@@ -34,12 +34,12 @@ type ReviewOptions = {
 export async function reviewAction(options: ReviewOptions) {
   console.log(chalk.blue('Starting code review...'));
 
-  const { apiKey, model } = getOpenAIConfig(); // Get API key and model
+  const { apiKey, model, provider } = getLLMConfig(); // Get API key and model
 
   // Check if API key is set
   if (!apiKey) {
     console.error(
-      chalk.red("Error: OpenAI API key is not set. Please configure it using the 'config' command.")
+      chalk.red(`Error: ${provider} API key is not set. Please configure it using the 'config' command.`)
     );
     process.exit(1);
   }
@@ -184,7 +184,7 @@ export async function reviewAction(options: ReviewOptions) {
 }
 
 async function analyzeUserIntent(gitDiffCommand: string): Promise<string> {
-  const { model, apiKey } = getOpenAIConfig();
+  const { model, apiKey } = getLLMConfig();
   const llm = new ChatOpenAI({
     modelName: model,
     temperature: 0.3,

@@ -5,7 +5,7 @@ import { StringOutputParser } from '@langchain/core/output_parsers';
 import { ChatOpenAI } from '@langchain/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { isGitRepository } from '../../utils';
-import { COMMON_IGNORE_FILES, getOpenAIConfig } from '../../config';
+import { COMMON_IGNORE_FILES, getLLMConfig } from '../../config';
 const git = simpleGit();
 
 type MessageOptions = {
@@ -18,11 +18,11 @@ type MessageOptions = {
 export async function messageAction(options: MessageOptions) {
   console.log(chalk.blue('Generating commit message...'));
 
-  const { apiKey, model } = getOpenAIConfig();
+  const { apiKey, model, provider } = getLLMConfig();
 
   if (!apiKey) {
     console.error(
-      chalk.red("Error: OpenAI API key is not set. Please configure it using the 'config' command.")
+      chalk.red(`Error: ${provider} API key is not set. Please configure it using the 'config' command.`)
     );
     process.exit(1);
   }
